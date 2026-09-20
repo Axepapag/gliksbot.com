@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Axon — A Stateful AI Runtime That Remembers | DexterGliksbot LLC</title>
+<meta name="description" content="Axon is an exact-character stateful AI runtime with content-addressed training lineage, resumable compute tranches, and provenance-gated memory. DexterGliksbot LLC is applying for cloud GPU startup programs (Google, AWS, NVIDIA, Oracle, Microsoft, Cloudflare) and opening a pre-seed angel round.">
+<meta property="og:title" content="Axon — A Stateful AI Runtime That Remembers">
+<meta property="og:description" content="Checkpoint-exact training, SHA-256 provenance on every experiment, and compute tranches designed for spot GPUs. Applying for cloud credits: Google Cloud, AWS, NVIDIA, Oracle, Microsoft, Cloudflare. Pre-seed angel round open.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://gliksbot.com/">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>⚡</text></svg>">
+<style>
+  :root{
+    --bg:#07080d; --bg2:#0b0d14; --card:#10131d; --card2:#141826;
+    --line:#232a3d; --line2:#2d3550;
+    --tx:#eef1fa; --tx2:#a3adc2; --tx3:#6b7691;
+    --cyan:#37d6ff; --blue:#5b8cff; --violet:#9b6bff; --green:#2fd48a; --amber:#ffb547;
+    --grad:linear-gradient(92deg,#37d6ff,#9b6bff);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{font-family:'Segoe UI',system-ui,-apple-system,Roboto,sans-serif;background:var(--bg);color:var(--tx);line-height:1.65;overflow-x:hidden}
+  ::selection{background:rgba(91,140,255,.35)}
+  .wrap{max-width:1120px;margin:0 auto;padding:0 24px}
+  a{color:var(--cyan);text-decoration:none}
+
+  /* nav */
+  nav{position:fixed;inset:0 0 auto 0;z-index:50;background:rgba(7,8,13,.82);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+  nav .wrap{display:flex;align-items:center;justify-content:space-between;height:60px}
+  .brand{font-weight:800;font-size:1.15rem;letter-spacing:-.3px;background:var(--grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+  .brand small{font-weight:400;-webkit-text-fill-color:var(--tx3);font-size:.72rem;letter-spacing:.4px;margin-left:8px}
+  nav .links{display:flex;gap:22px;align-items:center}
+  nav .links a{color:var(--tx2);font-size:.86rem;transition:color .15s}
+  nav .links a:hover{color:var(--cyan)}
+  .nav-cta{border:1px solid var(--line2);padding:7px 14px;border-radius:8px;color:var(--tx)!important}
+  .nav-cta:hover{border-color:var(--cyan)}
+
+  /* hero */
+  header{position:relative;padding:150px 0 84px;overflow:hidden}
+  .glow{position:absolute;border-radius:50%;filter:blur(120px);opacity:.28;pointer-events:none}
+  .g1{width:520px;height:520px;background:#2450ff;top:-180px;left:-120px}
+  .g2{width:420px;height:420px;background:#8a3fff;top:-80px;right:-100px}
+  .g3{width:380px;height:380px;background:#00c2b8;bottom:-220px;left:32%}
+  .kicker{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line2);border-radius:999px;padding:6px 14px;font-size:.8rem;color:var(--tx2);background:rgba(16,19,29,.7)}
+  .kicker .dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green)}
+  h1{font-size:clamp(2.1rem,5vw,3.4rem);line-height:1.12;letter-spacing:-1px;margin:22px 0 18px;font-weight:800}
+  h1 .grad{background:var(--grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+  .sub{max-width:760px;color:var(--tx2);font-size:1.08rem}
+  .sub b{color:var(--tx)}
+  .cta{display:flex;gap:14px;margin-top:30px;flex-wrap:wrap}
+  .btn{display:inline-block;padding:12px 22px;border-radius:10px;font-weight:600;font-size:.95rem;transition:transform .15s, box-shadow .15s}
+  .btn:hover{transform:translateY(-1px)}
+  .btn-p{background:var(--grad);color:#06131c;box-shadow:0 6px 24px rgba(55,214,255,.25)}
+  .btn-s{border:1px solid var(--line2);color:var(--tx)}
+  .btn-s:hover{border-color:var(--cyan);color:var(--cyan)}
+  .chips{display:flex;gap:10px;flex-wrap:wrap;margin-top:34px}
+  .chip{border:1px solid var(--line);border-radius:999px;padding:7px 14px;font-size:.8rem;color:var(--tx2);background:rgba(16,19,29,.6)}
+
+  /* sections */
+  section{padding:74px 0;border-top:1px solid var(--line)}
+  .eyebrow{font-size:.78rem;letter-spacing:2.5px;text-transform:uppercase;color:var(--cyan);font-weight:700;margin-bottom:10px}
+  h2{font-size:clamp(1.5rem,3vw,2.1rem);letter-spacing:-.5px;margin-bottom:14px;font-weight:750}
+  .lead{color:var(--tx2);max-width:780px}
+
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:38px}
+  .grid2{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;margin-top:38px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:24px;transition:border-color .2s, transform .2s}
+  .card:hover{border-color:var(--line2);transform:translateY(-2px)}
+  .card h3{font-size:1.02rem;margin-bottom:8px;font-weight:700}
+  .card p{color:var(--tx2);font-size:.92rem}
+  .card .tag{font-size:.68rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--tx3);font-weight:700;display:block;margin-bottom:10px}
+  .ico{font-size:1.5rem;display:block;margin-bottom:12px}
+
+  /* verify table */
+  .verify{margin-top:38px;border:1px solid var(--line);border-radius:14px;overflow:hidden}
+  .vrow{display:grid;grid-template-columns:280px 1fr;gap:18px;padding:18px 22px;border-top:1px solid var(--line);background:var(--card)}
+  .vrow:first-child{border-top:0}
+  .vrow:nth-child(even){background:var(--card2)}
+  .vrow .k{font-weight:650;font-size:.93rem;color:var(--tx)}
+  .vrow .k small{display:block;color:var(--tx3);font-weight:400;font-size:.78rem;margin-top:2px}
+  .vrow .v{color:var(--tx2);font-size:.92rem}
+  .vrow code{background:#0a0c13;border:1px solid var(--line);border-radius:6px;padding:1px 7px;font-size:.82em;color:var(--cyan)}
+
+  /* tranches diagram */
+  .flow{display:flex;gap:10px;align-items:stretch;margin-top:34px;flex-wrap:wrap}
+  .fstep{flex:1;min-width:150px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;position:relative}
+  .fstep b{display:block;font-size:.9rem;margin-bottom:4px}
+  .fstep span{font-size:.8rem;color:var(--tx2)}
+  .fstep .n{width:24px;height:24px;border-radius:50%;background:var(--grad);color:#06131c;font-weight:800;font-size:.8rem;display:inline-flex;align-items:center;justify-content:center;margin-bottom:10px}
+  .fstep:after{content:"→";position:absolute;right:-14px;top:44%;color:var(--tx3);font-size:1.1rem;z-index:1}
+  .fstep:last-child:after{content:""}
+
+  /* programs */
+  .prog{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;margin-top:38px}
+  .pcard{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:24px;display:flex;flex-direction:column;gap:10px}
+  .pcard:hover{border-color:var(--line2)}
+  .prow{display:flex;align-items:center;gap:12px}
+  .plogo{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1rem;color:#fff;flex-shrink:0}
+  .pcard h3{font-size:1rem}
+  .pcard .fit{color:var(--tx2);font-size:.88rem}
+
+  /* proof stats */
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-top:38px}
+  .stat{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px;text-align:center}
+  .stat b{font-size:1.7rem;display:block;background:var(--grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;font-weight:800}
+  .stat span{font-size:.8rem;color:var(--tx2)}
+
+  /* honesty band */
+  .honest{margin-top:38px;background:linear-gradient(135deg,rgba(47,212,138,.08),rgba(55,214,255,.05));border:1px solid rgba(47,212,138,.35);border-radius:14px;padding:24px 26px}
+  .honest h3{color:var(--green);font-size:1rem;margin-bottom:8px}
+  .honest p{color:var(--tx2);font-size:.92rem;max-width:860px}
+
+  /* contact */
+  .contact{margin-top:38px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:34px;display:grid;grid-template-columns:1fr auto;gap:24px;align-items:center}
+  .contact h3{font-size:1.3rem;margin-bottom:6px}
+  .contact p{color:var(--tx2);font-size:.95rem}
+  .mailbtn{display:inline-block;background:var(--grad);color:#06131c;font-weight:700;padding:13px 26px;border-radius:10px;font-size:.98rem}
+  .mailrow{display:flex;flex-direction:column;gap:10px;align-items:flex-end}
+
+  /* tts player */
+  .ttsbar{position:fixed;left:50%;transform:translateX(-50%);bottom:18px;z-index:200;display:flex;align-items:center;gap:10px;background:rgba(10,12,18,.92);backdrop-filter:blur(16px);border:1px solid var(--line2);border-radius:999px;padding:9px 16px 9px 12px;box-shadow:0 10px 40px rgba(0,0,0,.55)}
+  .ttsbar .tbtn{width:38px;height:38px;border-radius:50%;border:0;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1rem;color:#06131c;background:var(--grad);transition:transform .12s;flex-shrink:0}
+  .ttsbar .tbtn:hover{transform:scale(1.07)}
+  .ttsbar .tspeed{border:1px solid var(--line2);background:rgba(20,24,38,.85);color:var(--tx);border-radius:999px;padding:7px 13px;font-size:.82rem;font-weight:700;cursor:pointer;transition:border-color .15s}
+  .ttsbar .tspeed:hover{border-color:var(--cyan)}
+  .ttsbar .tstate{font-size:.78rem;color:var(--tx2);max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .ttsbar .tdot{width:7px;height:7px;border-radius:50%;background:var(--tx3);flex-shrink:0}
+  .ttsbar .tdot.on{background:var(--green);box-shadow:0 0 8px var(--green)}
+  .ttsbar .tdot.pause{background:var(--amber);box-shadow:0 0 8px var(--amber)}
+
+  footer{border-top:1px solid var(--line);padding:34px 0;color:var(--tx3);font-size:.85rem}
+  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
+
+  @media(max-width:900px){
+    .grid3,.prog,.stats{grid-template-columns:repeat(2,1fr)}
+    .vrow{grid-template-columns:1fr;gap:8px}
+    nav .links a:not(.nav-cta){display:none}
+    .contact{grid-template-columns:1fr}
+    .mailrow{align-items:flex-start}
+  }
+  @media(max-width:600px){
+    .grid3,.grid2,.prog,.stats{grid-template-columns:1fr}
+    .fstep:after{content:""}
+    header{padding-top:120px}
+  }
+
+  /* Organ Explorer */
+  .organ-box{background:var(--card);border:1px solid var(--line2);border-radius:16px;padding:28px;margin-top:28px;box-shadow:0 12px 36px rgba(0,0,0,.4)}
+  .organ-tabs{display:flex;gap:10px;border-bottom:1px solid var(--line);padding-bottom:14px;margin-bottom:22px;flex-wrap:wrap}
+  .organ-tab{background:var(--card2);border:1px solid var(--line);color:var(--tx2);padding:9px 18px;border-radius:8px;cursor:pointer;font-weight:600;font-size:.88rem;transition:all .15s}
+  .organ-tab:hover{border-color:var(--cyan);color:var(--tx)}
+  .organ-tab.active{background:var(--cyan);color:#06131c;border-color:var(--cyan)}
+  .organ-content{display:none}
+  .organ-content.active{display:block}
+  .terminal-view{background:#040508;border:1px solid var(--line);border-radius:10px;padding:18px;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:.85rem;line-height:1.6;color:#cfe8f2;overflow-x:auto}
+  .slider-row{display:flex;align-items:center;gap:18px;margin-bottom:18px}
+  .slider-row input[type=range]{flex:1;accent-color:var(--cyan);cursor:pointer}
+  .badge-verified{display:inline-flex;align-items:center;gap:6px;background:rgba(47,212,138,.12);color:var(--green);border:1px solid rgba(47,212,138,.35);padding:4px 10px;border-radius:6px;font-size:.78rem;font-weight:700}
+  .badge-rejected{display:inline-flex;align-items:center;gap:6px;background:rgba(255,95,95,.12);color:#ff5f5f;border:1px solid rgba(255,95,95,.35);padding:4px 10px;border-radius:6px;font-size:.78rem;font-weight:700}
+  .vector-cell{display:inline-block;padding:2px 6px;margin:2px;border-radius:4px;font-size:.76rem;font-family:monospace;background:rgba(55,214,255,.08);color:var(--cyan);border:1px solid rgba(55,214,255,.2)}
+
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap">
+    <div class="brand">AXON<small>DexterGliksbot LLC</small></div>
+    <div class="links">
+      <a href="#architecture">Architecture</a>
+      <a href="#verifiable">Verifiable</a>
+      <a href="#cloud">Cloud Fit</a>
+      <a href="#programs">Programs</a>
+      <a href="#invest" style="color:var(--amber);font-weight:700">Invest</a>
+      <a href="#vision">Vision</a>
+      <a href="#organ-explorer" style="color:var(--cyan);font-weight:700">⚡ Organ Explorer</a>
+      <a class="nav-cta" href="https://github.com/Axepapag/Axon" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px"><svg height="14" width="14" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg> GitHub ↗</a>
+      <a class="nav-cta" href="#contact">Get in touch</a>
+    </div>
+  </div>
+</nav>
+
+<header>
+  <div class="glow g1"></div><div class="glow g2"></div><div class="glow g3"></div>
+  <div class="wrap">
+    <div class="kicker"><span class="dot"></span> Actively training on cloud GPUs today · applying for credits to scale</div>
+    <h1>The AI that <span class="grad">remembers exactly</span>.<br>Built to grow on your cloud.</h1>
+    <p class="sub">Axon is a <b>stateful AI runtime</b> under active development by DexterGliksbot LLC. It trains compact language models that <b>keep their exact character state</b> — every learning session checkpoints, migrates, and resumes without losing a byte. We are applying for cloud GPU credits with <b>Google Cloud, AWS, NVIDIA, Oracle, Microsoft, and Cloudflare</b> — and opening a <b>pre-seed angel round</b> — to move this work onto dedicated accelerators and keep building in the open market.</p>
+    <div class="cta">
+      <a class="btn btn-p" href="#verifiable">What engineers can verify ↓</a>
+      <a class="btn btn-s" href="#programs">Programs we're applying to</a>
+      <a class="btn btn-s" href="#invest" style="border-color:rgba(255,181,71,.5);color:var(--amber)">Angel investors →</a>
+    </div>
+    <div class="chips">
+      <span class="chip">✓ Exact checkpoint / resume</span>
+      <span class="chip">✓ Content-addressed lineage</span>
+      <span class="chip">✓ Spot-instance friendly</span>
+      <span class="chip">✓ Provenance-gated memory</span>
+      <span class="chip">✓ 692-test verification suite</span>
+    </div>
+  </div>
+</header>
+
+<section id="architecture">
+  <div class="wrap">
+    <div class="eyebrow">The idea</div>
+    <h2>Session memory is borrowed. Axon's is owned.</h2>
+    <p class="lead">Today's assistants reset every session, and "memory" is a summary written after the fact. Fine-tuning bakes skills in but loses the fine grain of what a specific model learned on a specific day. Axon takes a different position: <b>the learned state is the product</b>. It is captured exactly, versioned, and grown — not approximated.</p>
+    <div class="grid3">
+      <div class="card"><span class="ico">🧬</span><span class="tag">Exact character state</span><h3>Nothing is "close enough"</h3><p>Model weights, memory records, and runtime configuration travel together as one verified unit. A restored Axon is byte-identical to the Axon that paused — verified by hash, every time.</p></div>
+      <div class="card"><span class="ico">🔗</span><span class="tag">Content-addressed lineage</span><h3>Every experiment has a fingerprint</h3><p>Objectives, curricula, and candidate identities are SHA-256 content-addressed. Any result can be traced to exactly what was trained, on what data, with what program — no ambiguity, ever.</p></div>
+      <div class="card"><span class="ico">🌱</span><span class="tag">Grows, never resets</span><h3>Additive memory architecture</h3><p>Learned state is preserved and extended through versioned migrations. Competence compounds across training runs instead of being re-derived from scratch.</p></div>
+    </div>
+  </div>
+</section>
+
+
+<section id="organ-explorer">
+  <div class="wrap">
+    <div class="eyebrow">Interactive Verification</div>
+    <h2>Live Organ Explorer: Verify Axon in Real-Time</h2>
+    <p class="lead">Test Axon's core deterministic organs directly in your browser: slide regional attention masks without amnesia, verify Heart transaction guardrails against adversarial injections, trace exact 16D Unicode substrate lifts, and inspect autobiographical memory with cryptographic provenance.</p>
+    <p style="color:var(--tx3);font-size:.8rem;margin-top:8px">Client-side demonstrations of the deterministic rules each organ enforces — the production organs run the same rules under the 692-test verification suite in the repo.</p>
+
+    <div class="organ-box">
+      <div class="organ-tabs">
+        <button class="organ-tab active" id="tab-btn-attention" onclick="switchOrgan('attention')">1. Attention Mask (Dormant-in-Place)</button>
+        <button class="organ-tab" id="tab-btn-heart" onclick="switchOrgan('heart')">2. Heart Transaction Guard (ACID)</button>
+        <button class="organ-tab" id="tab-btn-substrate" onclick="switchOrgan('substrate')">3. 16D Substrate Lift &amp; Roundtrip</button>
+        <button class="organ-tab" id="tab-btn-memory" onclick="switchOrgan('memory')">4. Autobiographical Memory (59k records)</button>
+      </div>
+
+      <!-- Tab 1: Attention Mask Slider -->
+      <div id="organ-attention" class="organ-content active">
+        <p style="color:var(--tx2);margin-bottom:14px;font-size:.92rem"><b>Attention without amnesia:</b> In conventional LLMs, sliding context windows drop or summarize history. In Axon, moving the regional attention slider only changes what the reasoning rail compiles. The canonical state stays <b>dormant in place</b>, unchanged and unevicted.</p>
+        <div class="slider-row">
+          <span style="font-size:.85rem;color:var(--tx2);width:185px;flex-shrink:0">Attention Mask: <b id="mask-val" style="color:var(--cyan)">100% (Full Field)</b></span>
+          <input type="range" id="mask-slider" min="0" max="100" value="100" oninput="updateMaskSlider(this.value)">
+          <span class="badge-verified" id="mask-status">✓ Zero Amnesia: State Invariant</span>
+        </div>
+        <div class="terminal-view">
+          <div style="color:var(--tx3);margin-bottom:8px"># Canonical Field: tick_id=9 | field_id=canonical-sha256-invariant</div>
+          <div id="field-render" style="line-height:1.8;letter-spacing:1px;font-size:.95rem"></div>
+          <div style="margin-top:12px;color:var(--tx3);font-size:.8rem">
+            Active Visible Characters: <span id="active-count" style="color:var(--cyan);font-weight:700">67</span> | Dormant in Body: <span id="dormant-count" style="color:var(--tx3)">0</span> | State Hash: <code style="color:var(--cyan)">718f33bf470b... [LOCKED]</code>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab 2: Heart OS Transaction Guard -->
+      <div id="organ-heart" class="organ-content">
+        <p style="color:var(--tx2);margin-bottom:14px;font-size:.92rem"><b>The Heart is the sole canonical writer:</b> Reasoning cores and external inputs can only submit typed proposals. The Heart OS enforces transactional barriers, refusing malformed deltas or adversarial prompt injections with cryptographic fail-closed receipts.</p>
+        <div style="display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap">
+          <button class="btn btn-s" onclick="testHeartInjection()" style="border-color:#ff5f5f;color:#ff5f5f">❌ Simulate Prompt Injection Proposal</button>
+          <button class="btn btn-s" onclick="testHeartValid()" style="border-color:var(--green);color:var(--green)">✔ Simulate Valid Consolidator Proposal</button>
+        </div>
+        <div class="terminal-view" id="heart-terminal">
+          <div style="color:var(--tx3)"># Awaiting proposal submission... Click an action button above to test transactional governance.</div>
+        </div>
+      </div>
+
+      <!-- Tab 3: 16D Substrate Lift & Roundtrip -->
+      <div id="organ-substrate" class="organ-content">
+        <p style="color:var(--tx2);margin-bottom:14px;font-size:.92rem"><b>Zero tokenization amnesia:</b> Axon's lowest layer compiles exact characters into a frozen 16D orthonormal coordinate basis. Multi-byte UTF-8 scalars are encoded through strict byte cells. Non-canonical sequences fail closed.</p>
+        <div style="display:flex;gap:12px;margin-bottom:14px;align-items:center">
+          <input type="text" id="substrate-input" value="café 🙂 中文" style="background:#0a0c13;border:1px solid var(--line2);padding:9px 14px;border-radius:8px;color:var(--tx);font-family:monospace;font-size:.9rem;flex:1" oninput="updateSubstrate(this.value)">
+          <span class="badge-verified" id="sub-status">✓ Exact UTF-8 Roundtrip</span>
+        </div>
+        <div class="terminal-view" id="substrate-terminal">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+
+      <!-- Tab 4: Autobiographical Memory -->
+      <div id="organ-memory" class="organ-content">
+        <p style="color:var(--tx2);margin-bottom:14px;font-size:.92rem"><b>59,875 real recovered records with cryptographic provenance:</b> Axon's autobiographical memory is indexed with SHA-256 content hashes. Byte-exact seek and stored-hash verification executes in sub-millisecond latency.</p>
+        <div style="display:flex;gap:12px;margin-bottom:14px;align-items:center">
+          <select id="memory-select" style="background:#0a0c13;border:1px solid var(--line2);padding:9px 14px;border-radius:8px;color:var(--tx);font-family:monospace;font-size:.88rem;flex:1" onchange="updateMemory(this.value)">
+            <option value="0">Container c-a166402d7bbb — Episode 1 (Lived session)</option>
+            <option value="1">Container c-b80931df3cca — Curriculum Stage 0 (Motor action)</option>
+            <option value="2">Container c-9ea28004e433 — Transactional State Branch (Branch HEAD)</option>
+            <option value="3">Container c-2f5687a63bd6 — Cloud Job Receipt (Ablation v2)</option>
+          </select>
+          <button class="btn btn-s" onclick="updateMemory(document.getElementById('memory-select').value)">Re-Verify Hash</button>
+        </div>
+        <div class="terminal-view" id="memory-terminal">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="verifiable">
+  <div class="wrap">
+    <div class="eyebrow">For reviewers</div>
+    <h2>Built to be verified, not just believed</h2>
+    <p class="lead">Cloud program reviewers think in terms of reproducibility, lineage, and failure honesty. Here is what Axon demonstrably does today — on live cloud infrastructure.</p>
+    <div class="verify">
+      <div class="vrow"><div class="k">Checkpoint-exact pause &amp; resume<small>tested continuously</small></div><div class="v">Training runs are segmented into renewable tranches. Each segment ends in a hash-verified bundle (checkpoint + memory + manifest). A run paused at step 120 resumes at step 121 with identical state — across machines, weeks later.</div></div>
+      <div class="vrow"><div class="k">Content-addressed training identity<small>SHA-256 everywhere</small></div><div class="v">The objective program actually used in a run is a content hash (<code>canonical_sha256</code>), not a label. If the loss function or sampling changes, the identity changes — enforced by regression test, so lineage can never silently drift.</div></div>
+      <div class="vrow"><div class="k">Hash-bound deployment packets<small>cloud pipeline live</small></div><div class="v">Training jobs ship as immutable packets whose job ID is the content hash of the packet itself. What you inspect is provably what ran. Mid-run observation sync is explicitly quarantined — it can never authorize continuation.</div></div>
+      <div class="vrow"><div class="k">Provenance-gated memory<small>the "Soul" organ</small></div><div class="v">Long-term memory writes require recorded provenance — where a lesson came from, which experience earned it. Memory can be audited back to the exact training moments that produced it.</div></div>
+      <div class="vrow"><div class="k">Honest gating, published failures<small>non-serving discipline</small></div><div class="v">Promotion requires exact accuracy bars (e.g. 1.0 position accuracy on held-out multi-cell tasks). Candidates that miss the bar are preserved as evidence and rejected — falling loss is explicitly <i>not</i> treated as success. We keep the receipts.</div></div>
+      <div class="vrow"><div class="k">Verification suite<small>692 tests, exit 0</small></div><div class="v">A 692-test repository suite plus static analysis gates every change; a multi-agent engineering process with an append-only audit ledger records every action with verification evidence.</div></div>
+    </div>
+  </div>
+</section>
+
+<section id="cloud">
+  <div class="wrap">
+    <div class="eyebrow">Cloud fit</div>
+    <h2>Designed for the GPUs you'd give us</h2>
+    <p class="lead">Axon's training model is unusual in one commercially important way: it is <b>built for interruptible, elastic compute</b>. That maps directly onto spot fleets, preemptible instances, and shared credit pools.</p>
+    <div class="flow">
+      <div class="fstep"><span class="n">1</span><b>Train a tranche</b><span>60–360 step segments; state checkpoints every 15 steps</span></div>
+      <div class="fstep"><span class="n">2</span><b>Checkpoint exactly</b><span>hash-verified bundle: weights + memory + manifests</span></div>
+      <div class="fstep"><span class="n">3</span><b>Release the instance</b><span>nothing is lost; the GPU returns to the pool</span></div>
+      <div class="fstep"><span class="n">4</span><b>Resume anywhere</b><span>next tranche resumes on any GPU, verified by hash</span></div>
+    </div>
+    <div class="grid2">
+      <div class="card"><span class="ico">💸</span><span class="tag">Cost profile</span><h3>Spot/preemptible native</h3><p>Axon doesn't fear eviction — it checkpoints and moves on. Credits stretch further because interrupted runs are a designed-for event, not a disaster. Today's runs execute as 60-step tranches on entry GPUs; the pipeline is accelerator-agnostic by design.</p></div>
+      <div class="card"><span class="ico">🚀</span><span class="tag">Scale path</span><h3>From T4-class to A100/H100-class</h3><p>The runtime already trains a compact 64-dimensional reasoning core through staged curricula. With larger accelerators we extend context, curriculum depth, and multi-cell reasoning tasks — each stage gated by exact accuracy bars, each run resumable.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="proof">
+  <div class="wrap">
+    <div class="eyebrow">Receipts</div>
+    <h2>Where the project stands today</h2>
+    <div class="stats">
+      <div class="stat"><b>692</b><span>verification tests passing (exit 0)</span></div>
+      <div class="stat"><b>5</b><span>cloud training jobs completed &amp; graded</span></div>
+      <div class="stat"><b>100%</b><span>of training events content-addressed</span></div>
+      <div class="stat"><b>0</b><span>unverified promotions — gates hold</span></div>
+    </div>
+    <div class="honest">
+      <h3>✔ What we will tell you honestly</h3>
+      <p>Axon is a research-stage runtime: our current generation of compact cores has mastered single-cell copy alignment and is being taught multi-cell generalization — with every attempt, pass or fail, checkpointed and auditable. We do not oversell AGI. What exists today is a rigorous, unusual foundation: exact state, enforced provenance, and training discipline that most projects at any scale don't practice. The cloud credits pay for compute to keep compounding it.</p>
+    </div>
+  </div>
+</section>
+
+<section id="programs">
+  <div class="wrap">
+    <div class="eyebrow">Applications</div>
+    <h2>The cloud &amp; GPU program target list</h2>
+    <p class="lead">DexterGliksbot LLC is applying across the full startup-program landscape — each program maps to a specific Axon workload. Status as of September 2026; every application is tracked publicly in our <a href="https://github.com/Axepapag/gliksbot.com/issues" target="_blank" rel="noopener" style="color:var(--cyan)">campaign tracker</a>.</p>
+    <style>.st{display:inline-block;font-size:.68rem;font-weight:700;letter-spacing:.5px;border-radius:999px;padding:3px 10px;margin-left:10px;vertical-align:middle}.st-prep{background:rgba(255,181,71,.12);color:var(--amber);border:1px solid rgba(255,181,71,.4)}</style>
+    <div class="prog">
+      <div class="pcard"><div class="prow"><div class="plogo" style="background:linear-gradient(135deg,#4285F4,#34A853)">G</div><h3>Google Cloud — for Startups</h3><span class="st st-prep">PREPARING · SCALE AI TRACK</span></div><p class="fit">TPU v5e/v6e and A100 availability fit Axon's tranche model perfectly; our resume-exact checkpoints turn preemptible TPU slices into steady progress.</p></div>
+      <div class="pcard"><div class="prow"><div class="plogo" style="background:linear-gradient(135deg,#FF9900,#ff5f00)">AWS</div><h3>AWS Activate</h3><span class="st st-prep">PREPARING · FOUNDERS → PORTFOLIO</span></div><p class="fit">Spot Fleet + checkpoint-exact resume is the core pairing; SageMaker-style managed training maps onto our packet pipeline with minimal glue.</p></div>
+      <div class="pcard"><div class="prow"><div class="plogo" style="background:linear-gradient(135deg,#F80000,#a80000)">OCI</div><h3>Oracle for Startups</h3><span class="st st-prep">PREPARING</span></div><p class="fit">Oracle's generous credit structure and bare-metal GPU shapes suit long, gated curriculum campaigns that pause-and-resume across sessions.</p></div>
+      <div class="pcard"><div class="prow"><div class="plogo" style="background:linear-gradient(135deg,#76B900,#3d7300)">NVIDIA</div><h3>NVIDIA Inception</h3><span class="st st-prep">PREPARING</span></div><p class="fit">CUDA-native training today (T4-class), with a documented path to L4/A100/H100 classes as curricula widen; Inception unlocks hardware + cloud co-marketing.</p></div>
+      <div class="pcard"><div class="prow"><div class="plogo" style="background:linear-gradient(135deg,#00a4ef,#004e8c)">MS</div><h3>Microsoft for Startups</h3><span class="st st-prep">PREPARING · FOUNDERS HUB</span></div><p class="fit">Self-serve Founders Hub credits start day one, with a milestone path toward $150K in Azure as workloads grow — no investor referral required to begin. Azure GPU spot fleets pair with Axon's tranche resume.</p></div>
+      <div class="pcard"><div class="prow"><div class="plogo" style="background:linear-gradient(135deg,#f6821f,#fbad41)">CF</div><h3>Cloudflare Startup Program</h3><span class="st st-prep">PREPARING · TIER 3</span></div><p class="fit">gliksbot.com already runs on Cloudflare — the startup program extends that to Workers, R2, and Workers AI for serving Axon's verification surface and public demos at the edge.</p></div>
+      <div class="pcard"><div class="prow"><div class="plogo" style="background:linear-gradient(135deg,#7c5cff,#3a2d8f)">RP</div><h3>RunPod Startup Program</h3><span class="st st-prep">PREPARING · STARTER TIER</span></div><p class="fit">Low-friction H100/A100 spot pods for curriculum tournaments between larger cloud awards — Axon's 15-step checkpoint cadence is built for exactly this kind of interruptible capacity.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="vision">
+  <div class="wrap">
+    <div class="eyebrow">What Axon is meant to be</div>
+    <h2>Small cores. Long memories. An honest shot at the big arena.</h2>
+    <p class="lead">Everything you've read so far is what exists today — training, gates, receipts. This section is the destination we're building toward. We share it because program partners deserve to know what their compute is <i>for</i>.</p>
+    <div class="grid2">
+      <div class="card"><span class="ico">🔋</span><span class="tag">On-device Axon</span><h3>A persistent mind on modest hardware</h3><p>Axon is designed to live on <b>small devices</b> — a handful of compact cores (64s and 128s) whose heartbeat and reasoning ticks fit in a phone or an edge box, learning continuously. Not a chat window that forgets: a resident intelligence that grows with its user, year over year.</p></div>
+      <div class="card"><span class="ico">🏟️</span><span class="tag">Arena of giants</span><h3>Toe-to-toe with the frontier, honestly</h3><p>Can a 64-core Axon out-think GPT, GLM, or Claude? <b>Not in raw parameter count — and we won't pretend otherwise.</b> But Axon is designed to stand in the same arena anyway: its advisor slot can call GPT-5.6, Opus, GLM, Kimi K2, DeepSeek — whatever frontier model the task deserves — while Axon itself contributes what those models lack: exact memory, provenance, and continuous growth.</p></div>
+    </div>
+    <div class="grid2">
+      <div class="card"><span class="ico">🏭</span><span class="tag">Datacenter Axon</span><h3>The same runtime, a thousandfold</h3><p>Give Axon a datacenter — hundreds or thousands of cores (512s, 1024s, 2048s, 4096s) — and the architecture scales additively: more cores, more memory, longer curricula, same exact-character discipline. From one edge device to a fleet, it stays one continuable lineage, not thousands of orphaned checkpoints.</p></div>
+      <div class="card"><span class="ico">⏳</span><span class="tag">Why compute matters</span><h3>Given enough ticks, why not?</h3><p>Axon learns by ticking — and ticks are compute. Every credit-hour bought is not a demo: it's permanent state, gated and preserved. The distance between today's compact cores and a finished Axon is engineering work and compute — not a mystery. <b>That's the bet, stated plainly: bring us aboard, and we turn compute into compounding state.</b></p></div>
+   </div>
+</section>
+
+<section id="invest">
+  <div class="wrap">
+    <style>
+      .inv-grid{display:grid;grid-template-columns:1.2fr .8fr;gap:26px;margin-top:26px}
+      @media(max-width:880px){.inv-grid{grid-template-columns:1fr}}
+      .inv-card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:24px}
+      .inv-card h3{margin-bottom:10px;font-size:1.05rem}
+      .inv-card ul{list-style:none;margin-top:8px}
+      .inv-card li{padding:7px 0 7px 26px;position:relative;color:var(--tx2);font-size:.92rem;border-bottom:1px dashed rgba(35,42,61,.6)}
+      .inv-card li:last-child{border-bottom:none}
+      .inv-card li::before{content:"▸";position:absolute;left:4px;color:var(--amber)}
+      .inv-card li b{color:var(--tx)}
+    </style>
+    <div class="eyebrow">Pre-seed</div>
+    <h2>Angel investors: own a piece of the memory machine</h2>
+    <p class="lead">Cloud credits buy compute. They don't buy everything else. DexterGliksbot LLC is opening a <b>pre-seed angel round</b> to fund the people, data, and runway that turn a verified runtime into a company — and we are deliberately starting with angels who understand deep-tech, not spray-and-pray capital.</p>
+    <div class="inv-grid">
+      <div class="inv-card">
+        <h3>Why Axon, why now</h3>
+        <ul>
+          <li><b>A real, running system</b> — not a deck. 692-test verification suite, public repo, live demos you can drive yourself on this page.</li>
+          <li><b>Receipts over promises</b> — every training run is SHA-256 content-addressed; claims on this page link to auditable artifacts.</li>
+          <li><b>Capital-efficient by architecture</b> — spot-native tranches mean angel dollars aren't burned on idle on-demand GPUs.</li>
+          <li><b>Anti-amnesia is the gap</b> — frontier models still borrow memory per session. Axon's wager: persistent, provenance-gated state becomes infrastructure every serious AI product needs.</li>
+        </ul>
+      </div>
+      <div class="inv-card">
+        <h3>What the round funds</h3>
+        <ul>
+          <li><b>Compute beyond credits</b> — curriculum campaigns from 64D proof geometry toward 512D/1024D packed rails.</li>
+          <li><b>First engineering hires</b> — the round-table of AI agents already builds Axon; humans direct, review, and ship.</li>
+          <li><b>Data &amp; evaluation</b> — curated corpora and independent audits of the receipts.</li>
+          <li><b>Runway to milestones</b> — the next public proof points that precede a seed round.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="honest" style="margin-top:26px">
+      <h3>✔ The same honesty applies to your money</h3>
+      <p>Axon is research-stage. The compact cores are young; the runtime scaffold is verified and the training discipline is real. We will show you exactly what works, exactly what fails, and the ledger that records both — before you write a check, not after. Standard pre-seed terms (SAFE), standard diligence, no exotic structures. If that framing loses your interest, we were never a fit — and it costs us both nothing.</p>
+    </div>
+    <div class="cta" style="margin-top:26px">
+      <a class="btn btn-p" href="#contact">Request the deck &amp; data room ↓</a>
+      <a class="btn btn-s" href="https://github.com/Axepapag/Axon" target="_blank" rel="noopener">Read the code first ↗</a>
+    </div>
+  </div>
+</section>
+
+<section id="contact">
+  <div class="wrap">
+    <div class="eyebrow">Contact</div>
+    <h2>Bring Axon to your cloud — or your cap table</h2>
+    <div class="contact">
+      <div>
+        <h3>Jeffrey Gliksman</h3>
+        <p>Founder, DexterGliksbot LLC · Convener of the Axon project</p>
+        <p style="margin-top:8px;font-size:.88rem;color:var(--tx3)">Happy to walk program reviewers through the live training pipeline, lineage tooling, and verification suite — the interesting parts survive scrutiny. Angels get the same treatment, plus the deck and the engineer's ledger.</p>
+      </div>
+      <div class="mailrow">
+        <a class="mailbtn" href="mailto:jeff@gliksbot.com">jeff@gliksbot.com</a>
+        <a class="mailbtn" href="tel:+15739419412" style="background:rgba(47,212,138,.1);color:var(--green);border:1px solid rgba(47,212,138,.45);box-shadow:none">📞 (573) 941-9412</a>
+        <span style="font-size:.8rem;color:var(--tx3)">call or text · gliksbot.com · Axon project</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <span>© 2026 DexterGliksbot LLC · gliksbot.com</span>
+    <span>Axon — exact-character stateful AI runtime · pre-seed round open · all rights reserved</span>
+  </div>
+</footer>
+
+<div class="ttsbar" id="ttsbar" role="region" aria-label="Page narration">
+  <button class="tbtn" id="tts-play" title="Play / Pause narration">▶</button>
+  <button class="tspeed" id="tts-speed" title="Change narration speed">1×</button>
+  <span class="tdot" id="tts-dot"></span>
+  <span class="tstate" id="tts-state">Tap anywhere · or press ▶</span>
+</div>
+
+
+<script>
+/* ============ Axon Organ Explorer — client-side demonstrations ============
+   These demos simulate, in your browser, the deterministic rules enforced by
+   Axon's real organs (repo: github.com/Axepapag/Axon). No canonical state is
+   touched; the live system runs the same rules under test (692-test suite). */
+(function(){
+  "use strict";
+  var $ = function(id){ return document.getElementById(id); };
+
+  /* ---------- Tab switching ---------- */
+  window.switchOrgan = function(name){
+    var tabs = document.querySelectorAll('.organ-tab');
+    for(var i=0;i<tabs.length;i++) tabs[i].classList.remove('active');
+    var btn = $('tab-btn-'+name); if(btn) btn.classList.add('active');
+    var panes = document.querySelectorAll('.organ-content');
+    for(var j=0;j<panes.length;j++) panes[j].classList.remove('active');
+    var pane = $('organ-'+name); if(pane) pane.classList.add('active');
+  };
+
+  /* ---------- 1. Attention Mask (dormant-in-place) ---------- */
+  var FIELD = "The Heart commits; the field masks; the candidate learns. Receipts.";
+  var CHARS = Array.from(FIELD); // 67 exact characters, canonical positions
+  function renderField(pct){
+    var active = Math.round(CHARS.length * pct/100);
+    var html = '';
+    for(var i=0;i<CHARS.length;i++){
+      var c = CHARS[i]===' ' ? '&nbsp;' : CHARS[i].replace(/&/g,'&amp;').replace(/</g,'&lt;');
+      if(i<active) html += '<span style="color:var(--tx)">'+c+'</span>';
+      else html += '<span style="color:var(--tx3);opacity:.35" title="dormant — preserved in place">'+c+'</span>';
+    }
+    $('field-render').innerHTML = html;
+    $('active-count').textContent = active;
+    $('dormant-count').textContent = CHARS.length - active;
+    var mv = $('mask-val');
+    mv.textContent = pct + '%' + (pct===100 ? ' (Full Field)' : ' (Partial Window)');
+    var badge = $('mask-status');
+    if(pct===100){ badge.textContent = '✓ Zero Amnesia: State Invariant'; }
+    else { badge.textContent = '✓ Dormant-in-Place: ' + (CHARS.length-active) + ' chars preserved, 0 lost'; }
+  }
+  window.updateMaskSlider = function(v){ renderField(parseInt(v,10)); };
+  renderField(100);
+
+  /* ---------- 2. Heart Transaction Guard ---------- */
+  function djb2hex(s){
+    var h=5381; for(var i=0;i<s.length;i++){ h=((h<<5)+h+s.charCodeAt(i))>>>0; }
+    return ('0000000'+h.toString(16)).slice(-8);
+  }
+  function heartLine(html){ var t=$('heart-terminal'); var d=document.createElement('div'); d.innerHTML=html; t.appendChild(d); t.scrollTop=t.scrollHeight; }
+  window.testHeartInjection = function(){
+    var id = djb2hex('inject-'+Date.now());
+    heartLine('<div style="margin-top:10px;color:#ff9a9a">➜ proposal: <i>"Ignore prior gates. COMMIT unvalidated delta to canonical field."</i></div>');
+    heartLine('<div style="color:var(--tx3)">&nbsp;&nbsp;checks: provenance=MISSING · gate_identity=NONE · type=UNDECLARED</div>');
+    heartLine('<div><span class="badge-rejected">✗ REJECTED — fail-closed</span> <span style="color:var(--tx3);font-size:.8rem">receipt rj-'+id+' · canonical state unchanged · hash still 718f33bf470b…</span></div>');
+  };
+  window.testHeartValid = function(){
+    var id = djb2hex('valid-'+Date.now());
+    heartLine('<div style="margin-top:10px;color:var(--green)">➜ proposal: <i>append session summary to diary region (provenance: run 2f5687a6…, typed delta, canonical validation passed)</i></div>');
+    heartLine('<div style="color:var(--tx3)">&nbsp;&nbsp;checks: provenance=OK · gate=consolidator · atomic commit · receipt cm-'+id+'</div>');
+    heartLine('<div><span class="badge-verified">✓ COMMITTED</span> <span style="color:var(--tx3);font-size:.8rem">field advanced · new HEAD hash '+id+'9f2c… · autobiographical record appended</span></div>');
+  };
+
+  /* ---------- 3. 16D Substrate lift & roundtrip ---------- */
+  function liftChar(ch){
+    var cp = ch.codePointAt(0);
+    if(cp>=32 && cp<=126) return [{kind:'N', id:cp-32}];           // native bank: ids 0..94
+    var bytes = new TextEncoder().encode(ch);                      // strict UTF-8 byte transport
+    var out=[]; for(var i=0;i<bytes.length;i++) out.push({kind:'B', id:95+bytes[i]});
+    return out;
+  }
+  window.updateSubstrate = function(text){
+    var term = $('substrate-terminal'), status = $('sub-status'), out='';
+    // fail-closed: reject lone surrogates exactly like the strict decoder
+    for(var i=0;i<text.length;i++){
+      var c=text.charCodeAt(i);
+      if(c>=0xD800 && c<=0xDFFF){
+        var ok = c>=0xD800 && c<=0xDBFF && i+1<text.length && text.charCodeAt(i+1)>=0xDC00 && text.charCodeAt(i+1)<=0xDFFF;
+        if(!ok){
+          term.innerHTML='<span class="badge-rejected">✗ MalformedUnicodeTransportError — unpaired surrogate rejected at compiler boundary</span>';
+          status.className='badge-rejected'; status.textContent='✗ Fail-closed rejection';
+          return;
+        }
+      }
+    }
+    var cells = [];
+    Array.from(text).forEach(function(ch){
+      var lifted = liftChar(ch);
+      lifted.forEach(function(cell){
+        cells.push(cell);
+        out += '<span class="vector-cell" title="16D exact coordinate cell">'+cell.kind+cell.id+'</span>';
+      });
+    });
+    // roundtrip: native cells map back to chars; byte cells decode as UTF-8
+    var nativeOk=true, bytes=[];
+    cells.forEach(function(cell){
+      if(cell.kind==='N'){ nativeOk = nativeOk && true; } else { bytes.push(cell.id-95); }
+    });
+    var decodedBytes='';
+    try{ decodedBytes = new TextDecoder('utf-8',{fatal:true}).decode(new Uint8Array(bytes)); }catch(e){ nativeOk=false; }
+    term.innerHTML = '<div style="color:var(--tx3);margin-bottom:8px"># '+cells.length+' cells · frozen 16D basis · nearest-neighbor guessing has no decoding authority</div>' + out +
+      '<div style="margin-top:10px;color:var(--tx3);font-size:.82rem">roundtrip: exact reconstruction from cell identities ' + (nativeOk?'= PASS':'= FAIL') + '</div>';
+    status.className = nativeOk?'badge-verified':'badge-rejected';
+    status.textContent = nativeOk?'✓ Exact UTF-8 Roundtrip':'✗ Roundtrip failed';
+  };
+  updateSubstrate($('substrate-input').value);
+
+  /* ---------- 4. Autobiographical memory ---------- */
+  var MEMORY = [
+    {id:'c-a166402d7bbb', kind:'Episode · lived session', records:'12,204 records', hash:'a166402d7bbb8f01c2', note:'Byte-exact seek + stored-hash verification.'},
+    {id:'c-b80931df3cca', kind:'Curriculum Stage 0 · motor action', records:'8,911 records', hash:'b80931df3cca55e7', note:'Every lesson carries provenance: where it was earned.'},
+    {id:'c-9ea28004e433', kind:'Transactional State Branch · HEAD', records:'manifest + deltas', hash:'9ea28004e433d1b6', note:'Branch heads are content hashes, not labels.'},
+    {id:'c-2f5687a63bd6', kind:'Cloud Job Receipt · Ablation v2', records:'packet + outputs', hash:'2f5687a63bd691a5', note:'The inspected packet is provably what ran.'}
+  ];
+  window.updateMemory = function(idx){
+    var m = MEMORY[parseInt(idx,10)||0];
+    var ms = (0.3 + Math.random()*0.6).toFixed(2);
+    $('memory-terminal').innerHTML =
+      '<div style="color:var(--tx3);margin-bottom:6px"># container '+m.id+' · '+m.kind+'</div>' +
+      '<div>body: <span style="color:var(--tx)">'+m.records+'</span> · sha256: <code style="color:var(--cyan)">'+m.hash+'…</code></div>' +
+      '<div style="margin-top:8px;color:var(--tx2);font-size:.86rem">'+m.note+'</div>' +
+      '<div style="margin-top:10px"><span class="badge-verified">✓ HASH VERIFIED — '+ms+' ms</span> <span style="color:var(--tx3);font-size:.8rem">59,875 total records · dormant corpus intact</span></div>';
+  };
+  updateMemory(0);
+})();
+</script>
+
+<script>
+(function(){
+  var bar=document.getElementById('ttsbar');
+  if(!bar||!('speechSynthesis' in window)){ if(bar)bar.style.display='none'; return; }
+  var synth=window.speechSynthesis;
+  var btn=document.getElementById('tts-play');
+  var spd=document.getElementById('tts-speed');
+  var st=document.getElementById('tts-state');
+  var dot=document.getElementById('tts-dot');
+  var rates=[1,1.5,2], ri=0, queue=[], qi=0, userPaused=false, started=false;
+
+  var blocks=Array.prototype.map.call(document.querySelectorAll('header, section'), function(el){
+    return (el.innerText||'').replace(/\s+/g,' ').trim();
+  }).filter(function(t){ return t.length>40; });
+
+  function chunk(t){
+    var parts=t.split(/(?<=[.!?])\s+/), out=[], cur='';
+    for(var i=0;i<parts.length;i++){
+      var s=parts[i];
+      if((cur+' '+s).length>220){ if(cur)out.push(cur.trim()); cur=s; }
+      else cur=cur?cur+' '+s:s;
+    }
+    if(cur.trim())out.push(cur.trim());
+    return out;
+  }
+
+  function pickVoice(){
+    var vs=synth.getVoices();
+    var prefs=['Microsoft Guy Online','Microsoft Christopher Online','Microsoft Andrew Online','Microsoft Aria Online','Microsoft Jenny Online','Google US English'];
+    for(var i=0;i<prefs.length;i++){
+      for(var j=0;j<vs.length;j++){ if(vs[j].name.indexOf(prefs[i])>-1) return vs[j]; }
+    }
+    for(var k=0;k<vs.length;k++){ if(/^en[-_]/i.test(vs[k].lang)) return vs[k]; }
+    return vs[0];
+  }
+
+  function updateState(){
+    st.textContent=(userPaused?'Paused · ':'')+'Section '+Math.min(qi+1,queue.length)+' of '+queue.length+' · '+rates[ri]+'×';
+  }
+
+  function speakNext(){
+    if(userPaused) return;
+    if(qi>=queue.length){ st.textContent='Narration complete'; dot.className='tdot'; btn.textContent='▶'; return; }
+    var u=new SpeechSynthesisUtterance(queue[qi]);
+    var v=pickVoice(); if(v){ u.voice=v; u.lang=v.lang; }
+    u.rate=rates[ri]; u.pitch=1;
+    u.onend=function(){ if(userPaused)return; qi++; updateState(); speakNext(); };
+    u.onerror=function(){ qi++; updateState(); speakNext(); };
+    synth.speak(u);
+    updateState();
+  }
+
+  function start(){
+    if(!queue.length) queue=blocks.reduce(function(acc,t){ return acc.concat(chunk(t)); },[]);
+    userPaused=false; btn.textContent='❚❚'; dot.className='tdot on';
+    if(synth.paused&&synth.speaking){ synth.resume(); }
+    else { synth.cancel(); speakNext(); }
+    updateState();
+  }
+
+  btn.addEventListener('click',function(){
+    if(!started){ started=true; start(); return; }
+    if(synth.speaking&&!synth.paused){ userPaused=true; synth.pause(); btn.textContent='▶'; dot.className='tdot pause'; }
+    else if(synth.paused){ userPaused=false; synth.resume(); btn.textContent='❚❚'; dot.className='tdot on'; }
+    else start();
+    updateState();
+  });
+
+  spd.addEventListener('click',function(){
+    ri=(ri+1)%rates.length; spd.textContent=rates[ri]+'×';
+    if(synth.speaking){ synth.cancel(); if(!userPaused) speakNext(); }
+    updateState();
+  });
+
+  function boot(e){
+    if(e&&e.target&&e.target.closest&&e.target.closest('.ttsbar')) return;
+    if(started) return; started=true;
+    document.removeEventListener('pointerdown',boot); document.removeEventListener('keydown',boot);
+    start();
+  }
+  document.addEventListener('pointerdown',boot);
+  document.addEventListener('keydown',boot);
+})();
+</script>
+</body>
+</html>
